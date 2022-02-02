@@ -8,18 +8,21 @@ target = r'copy.txt'
 shutil.copyfile(question, target)
 
 print("What sort of code are we working with?")
-print("1 - shift / Caesar cipher\n 2 - mixed alphaber cipher\n 3 - we'll see")
+print("1 - shift / Caesar cipher\n2 - mixed alphaber cipher\n3 - we'll see")
 choice = int(input())
 
 decrypt = False
-question = input("Would you like to encrypt or decrypt your file? \n")
-if question == "encrypt" or "e":
-    pass
-elif question == "decrypt" or "d":
-    decrypt = True
-else:
-    print("I don't understand")
-    quit()
+if choice != 3:
+    print("What would you like to do?")
+    print("1 - Encrypt \n2 - Decrypt")
+    question = int(input())
+    if question == 1:
+        decrypt = False
+    elif question == 2:
+        decrypt = True
+    else:
+        print("I don't understand")
+        quit()
 
 alphabet = {0:["a", "A"],1:["b", "B"],2:["c", "C"],3:["d", "D"],4:["e","E"],5:["f","F"],6:["g","G"],7:["h","H"],8:["i","I"],9:["j","J"],10:["k","K"],11:["l","L"],12:["m","M"],
 13:["n","N"],14:["o","O"],15:["p","P"],16:["q","Q"],17:["r","R"],18:["s","S"],19:["t","T"],20:["u","U"],21:["v","V"],22:["w","W"],23:["x","X"],24:["y","Y"],25:["z","Z"]}
@@ -145,6 +148,7 @@ elif choice == 2:
     alpha_list = list(alpha)
     key_limit = 0
     cipher = cipher.replace(" ", "")
+    cipher = cipher.lower()
     for char in cipher:
         if char not in key:
             key=key+char
@@ -155,6 +159,14 @@ elif choice == 2:
         if char not in key:
             key=key+char
     code = list(key)
+
+    if decrypt == True:
+        reverse_code = []
+        for char in alpha:
+            temp = code.index(char)
+            temp2 = alpha_list[temp]
+            reverse_code.append(temp2)
+        code = reverse_code
 
     with open('copy.txt', 'r') as f:
         for line in f:
@@ -224,58 +236,65 @@ elif choice == 2:
 elif choice == 3:
     with open('copy.txt') as f:
         for line in f:
-            temp = line.count("A") + line.count("a")
-            frequencies["a"] += temp
-            temp = line.count("B") + line.count("b")
-            frequencies["b"] += temp
-            temp = line.count("C") + line.count("c")
-            frequencies["c"] += temp
-            temp = line.count("D") + line.count("d")
-            frequencies["d"] += temp
-            temp = line.count("E") + line.count("e")
-            frequencies["e"] += temp
-            temp = line.count("F") + line.count("f")
-            frequencies["f"] += temp
-            temp = line.count("G") + line.count("g")
-            frequencies["g"] += temp
-            temp = line.count("H") + line.count("h")
-            frequencies["h"] += temp
-            temp = line.count("I") + line.count("i")
-            frequencies["i"] += temp
-            temp = line.count("J") + line.count("j")
-            frequencies["j"] += temp
-            temp = line.count("K") + line.count("k")
-            frequencies["k"] += temp
-            temp = line.count("L") + line.count("l")
-            frequencies["l"] += temp
-            temp = line.count("M") + line.count("m")
-            frequencies["m"] += temp
-            temp = line.count("N") + line.count("n")
-            frequencies["n"] += temp
-            temp = line.count("O") + line.count("o")
-            frequencies["o"] += temp
-            temp = line.count("P") + line.count("p")
-            frequencies["p"] += temp
-            temp = line.count("Q") + line.count("q")
-            frequencies["q"] += temp
-            temp = line.count("R") + line.count("r")
-            frequencies["r"] += temp
-            temp = line.count("S") + line.count("s")
-            frequencies["s"] += temp
-            temp = line.count("T") + line.count("t")
-            frequencies["t"] += temp
-            temp = line.count("U") + line.count("u")
-            frequencies["u"] += temp
-            temp = line.count("V") + line.count("v")
-            frequencies["v"] += temp
-            temp = line.count("W") + line.count("w")
-            frequencies["w"] += temp
-            temp = line.count("X") + line.count("x")
-            frequencies["x"] += temp
-            temp = line.count("Y") + line.count("y")
-            frequencies["y"] += temp
-            temp = line.count("Z") + line.count("z")
-            frequencies["z"] += temp
+            # for key in alphabet:
+            #     lower = key[0]
+            #     upper = key[1]
+            #     temp = line.count(lower) + line.count(upper)
+            #     frequencies[lower] += temp
+            temp = alphabet[0]
+            count = line.count(temp[0]) + line.count(temp[1])
+            # temp = line.count("A") + line.count("a")
+            # frequencies["a"] += temp
+            # temp = line.count("B") + line.count("b")
+            # frequencies["b"] += temp
+            # temp = line.count("C") + line.count("c")
+            # frequencies["c"] += temp
+            # temp = line.count("D") + line.count("d")
+            # frequencies["d"] += temp
+            # temp = line.count("E") + line.count("e")
+            # frequencies["e"] += temp
+            # temp = line.count("F") + line.count("f")
+            # frequencies["f"] += temp
+            # temp = line.count("G") + line.count("g")
+            # frequencies["g"] += temp
+            # temp = line.count("H") + line.count("h")
+            # frequencies["h"] += temp
+            # temp = line.count("I") + line.count("i")
+            # frequencies["i"] += temp
+            # temp = line.count("J") + line.count("j")
+            # frequencies["j"] += temp
+            # temp = line.count("K") + line.count("k")
+            # frequencies["k"] += temp
+            # temp = line.count("L") + line.count("l")
+            # frequencies["l"] += temp
+            # temp = line.count("M") + line.count("m")
+            # frequencies["m"] += temp
+            # temp = line.count("N") + line.count("n")
+            # frequencies["n"] += temp
+            # temp = line.count("O") + line.count("o")
+            # frequencies["o"] += temp
+            # temp = line.count("P") + line.count("p")
+            # frequencies["p"] += temp
+            # temp = line.count("Q") + line.count("q")
+            # frequencies["q"] += temp
+            # temp = line.count("R") + line.count("r")
+            # frequencies["r"] += temp
+            # temp = line.count("S") + line.count("s")
+            # frequencies["s"] += temp
+            # temp = line.count("T") + line.count("t")
+            # frequencies["t"] += temp
+            # temp = line.count("U") + line.count("u")
+            # frequencies["u"] += temp
+            # temp = line.count("V") + line.count("v")
+            # frequencies["v"] += temp
+            # temp = line.count("W") + line.count("w")
+            # frequencies["w"] += temp
+            # temp = line.count("X") + line.count("x")
+            # frequencies["x"] += temp
+            # temp = line.count("Y") + line.count("y")
+            # frequencies["y"] += temp
+            # temp = line.count("Z") + line.count("z")
+            # frequencies["z"] += temp
 
     sorted_items = sorted(frequencies.items(), key=lambda item: item[1], reverse=True)
     print(sorted_items)
