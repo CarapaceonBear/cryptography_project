@@ -14,12 +14,13 @@ Encryption options so far:
 	- jumbles encoding alphabet based on given keyword,
 	  then remaining letters are in order
 	- decryption available
+ - Vigenère cipher
+	- cycles through a grid of encoding alphabets, based on given keyword
  - frequency-analysis based decryption
 	- currently very rudimentary
 
 
 To do list:
- - de-spagghettify shift cipher code, utilise the encryption function
  - improve frequency analysis with followup checks
 	ie. check double letters, single letter words
- - vigeneres cipher
+ - decrypt vigeneres cipher? Not researched how hard that is
