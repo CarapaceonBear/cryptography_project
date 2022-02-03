@@ -1,3 +1,4 @@
+from re import X
 import shutil
 import os
 
@@ -8,7 +9,7 @@ target = r'copy.txt'
 shutil.copyfile(question, target)
 
 print("What sort of code are we working with?")
-print("1 - shift / Caesar cipher\n2 - mixed alphaber cipher\n3 - we'll see")
+print("1 - shift / Caesar cipher\n2 - mixed alphabet cipher\n3 - decryption using frequency analysis\n")
 choice = int(input())
 
 decrypt = False
@@ -36,10 +37,70 @@ if os.path.exists("translation.txt"):
     os.remove("translation.txt")
 translation = open("translation.txt", "x")
 
+# function encodes .txt based on given code
+def multi_encoding(code):
+    with open('copy.txt', 'r') as f:
+        for line in f:
+            cursor = line
+            starting_point = 0
+            progress = []
+            while len(progress) < (key_limit):
+            # establish hold letter (which wants to become 'a')
+                temp = code[starting_point]
+                temp2 = alpha_list.index(temp)
+                progress.append(starting_point)
+                hold_letter = alphabet[temp2]
+            # replace 'a' with placeholder chars
+                symbol = alphabet[starting_point]
+                cursor = cursor.replace(symbol[0], '@')
+                cursor = cursor.replace(symbol[1], '$')
+
+            # first replacement (whichever wants to be 'a')
+                new_letter = alphabet[starting_point]
+                temp = code.index(new_letter[0])
+                progress.append(temp)
+                old_letter = alphabet[temp]
+
+                cursor = cursor.replace(old_letter[0], new_letter[0])
+                cursor = cursor.replace(old_letter[1], new_letter[1])
+
+            # work backwards through alphabet
+                new_letter = old_letter
+                while new_letter != hold_letter:
+                    temp = code.index(new_letter[0])
+                    progress.append(temp)
+                    old_letter = alphabet[temp]
+
+                    cursor = cursor.replace(old_letter[0], new_letter[0])
+                    cursor = cursor.replace(old_letter[1], new_letter[1])
+
+                    new_letter = old_letter
+            
+            # replace placeholder chars with hold letter
+                cursor = cursor.replace("@", new_letter[0])
+                cursor = cursor.replace("$", new_letter[1])
+                
+            # establish new starting point for first missed letter
+                progress.sort()
+                num1 = int(0)
+                for i in progress:
+                    num2 = i
+                    if num2 == num1:
+                        num1 += 1
+                    elif num2 != num1:
+                        break
+                starting_point = num1
+
+        # write encrypted txt to translation.txt
+            translation = open("translation.txt", "a")
+            translation.write(cursor)
+            translation.close()
+
 ##
 ## encoding your .txt using a shift cypher ##
 ##
 if choice == 1:
+    # a lot of spaghetti in here, can streamline to use multi_encoding function, just need to convert number shift into letter code
     cipher = int(input("Please give a shift number, from 1-25. \n"))
     if cipher < 0 or cipher > 25:
         print("I can't shift that much!")
@@ -159,7 +220,7 @@ elif choice == 2:
         if char not in key:
             key=key+char
     code = list(key)
-
+    # if we're decrypting, have to create the inverse cipher, then pass that through the encryption
     if decrypt == True:
         reverse_code = []
         for char in alpha:
@@ -167,143 +228,38 @@ elif choice == 2:
             temp2 = alpha_list[temp]
             reverse_code.append(temp2)
         code = reverse_code
-
-    with open('copy.txt', 'r') as f:
-        for line in f:
-            cursor = line
-            starting_point = 0
-            progress = []
-
-            while len(progress) < (key_limit):
-            # establish hold letter (which wants to become 'a')
-                temp = code[starting_point]
-                temp2 = alpha_list.index(temp)
-                progress.append(starting_point)
-                hold_letter = alphabet[temp2]
-            # replace 'a' with placeholder chars
-                symbol = alphabet[starting_point]
-                cursor = cursor.replace(symbol[0], '@')
-                cursor = cursor.replace(symbol[1], '$')
-
-            # first replacement (whichever wants to be 'a')
-                new_letter = alphabet[starting_point]
-                temp = code.index(new_letter[0])
-                progress.append(temp)
-                old_letter = alphabet[temp]
-
-                cursor = cursor.replace(old_letter[0], new_letter[0])
-                cursor = cursor.replace(old_letter[1], new_letter[1])
-
-            # work backwards through alphabet
-                new_letter = old_letter
-                while new_letter != hold_letter:
-                    temp = code.index(new_letter[0])
-                    progress.append(temp)
-                    old_letter = alphabet[temp]
-
-                    cursor = cursor.replace(old_letter[0], new_letter[0])
-                    cursor = cursor.replace(old_letter[1], new_letter[1])
-
-                    new_letter = old_letter
-            
-            # replace placeholder chars with hold letter
-                cursor = cursor.replace("@", new_letter[0])
-                cursor = cursor.replace("$", new_letter[1])
-                
-            # establish new starting point for first missed letter
-                progress.sort()
-                num1 = int(0)
-                for i in progress:
-                    num2 = i
-                    if num2 == num1:
-                        num1 += 1
-                    elif num2 != num1:
-                        break
-                starting_point = num1
-
-        # write encrypted txt to translation.txt
-            translation = open("translation.txt", "a")
-            translation.write(cursor)
-            translation.close()
-
-
-
-
+    # call encoding function
+    multi_encoding(code)
 
 ##
 ## frequency analysis of text ##
 ##
 elif choice == 3:
-    with open('copy.txt') as f:
-        for line in f:
-            # for key in alphabet:
-            #     lower = key[0]
-            #     upper = key[1]
-            #     temp = line.count(lower) + line.count(upper)
-            #     frequencies[lower] += temp
-            temp = alphabet[0]
-            count = line.count(temp[0]) + line.count(temp[1])
-            # temp = line.count("A") + line.count("a")
-            # frequencies["a"] += temp
-            # temp = line.count("B") + line.count("b")
-            # frequencies["b"] += temp
-            # temp = line.count("C") + line.count("c")
-            # frequencies["c"] += temp
-            # temp = line.count("D") + line.count("d")
-            # frequencies["d"] += temp
-            # temp = line.count("E") + line.count("e")
-            # frequencies["e"] += temp
-            # temp = line.count("F") + line.count("f")
-            # frequencies["f"] += temp
-            # temp = line.count("G") + line.count("g")
-            # frequencies["g"] += temp
-            # temp = line.count("H") + line.count("h")
-            # frequencies["h"] += temp
-            # temp = line.count("I") + line.count("i")
-            # frequencies["i"] += temp
-            # temp = line.count("J") + line.count("j")
-            # frequencies["j"] += temp
-            # temp = line.count("K") + line.count("k")
-            # frequencies["k"] += temp
-            # temp = line.count("L") + line.count("l")
-            # frequencies["l"] += temp
-            # temp = line.count("M") + line.count("m")
-            # frequencies["m"] += temp
-            # temp = line.count("N") + line.count("n")
-            # frequencies["n"] += temp
-            # temp = line.count("O") + line.count("o")
-            # frequencies["o"] += temp
-            # temp = line.count("P") + line.count("p")
-            # frequencies["p"] += temp
-            # temp = line.count("Q") + line.count("q")
-            # frequencies["q"] += temp
-            # temp = line.count("R") + line.count("r")
-            # frequencies["r"] += temp
-            # temp = line.count("S") + line.count("s")
-            # frequencies["s"] += temp
-            # temp = line.count("T") + line.count("t")
-            # frequencies["t"] += temp
-            # temp = line.count("U") + line.count("u")
-            # frequencies["u"] += temp
-            # temp = line.count("V") + line.count("v")
-            # frequencies["v"] += temp
-            # temp = line.count("W") + line.count("w")
-            # frequencies["w"] += temp
-            # temp = line.count("X") + line.count("x")
-            # frequencies["x"] += temp
-            # temp = line.count("Y") + line.count("y")
-            # frequencies["y"] += temp
-            # temp = line.count("Z") + line.count("z")
-            # frequencies["z"] += temp
-
-    sorted_items = sorted(frequencies.items(), key=lambda item: item[1], reverse=True)
-    print(sorted_items)
-
+    # count frequency of each letter
     with open('copy.txt', 'r') as f:
         for line in f:
-            cursor = line
-            #for letter in sorted_items():
-            # this has become a list, so won't work like this
-            pass
-    pass
+            for key in alphabet:
+                temp = alphabet[key]
+                lower = temp[0]
+                upper = temp[1]
+                count = line.count(lower) + line.count(upper)
+                frequencies[lower] += count
+    sorted_items = sorted(frequencies.items(), key=lambda item: item[1], reverse=True)
+    simple_sort = ""
+    for item in sorted_items:
+        letter = item[0]
+        simple_sort=simple_sort+letter
+    # create cipher based on likely letter-pairs, using frequencies
+    key = ""
+    alpha = "abcdefghijklmnopqrstuvwxyz"
+    alpha_list = list(alpha)
+    key_limit = 25
+    for char in alpha:
+        where_in_sort = simple_sort.index(char)
+        there_in_simple_e = simple_e[where_in_sort]
+        new_letter = there_in_simple_e[0]
+        key=key+new_letter
+    code = list(key)
+    multi_encoding(code)
+
 

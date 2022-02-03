@@ -13,9 +13,13 @@ Encryption options so far:
  - mixed alphabet cipher
 	- jumbles encoding alphabet based on given keyword,
 	  then remaining letters are in order
-	- decryption next on my list to do
+	- decryption available
+ - frequency-analysis based decryption
+	- currently very rudimentary
+
 
 To do list:
- - mixed alphabet decryption
- - frequency-analysis decryption
+ - de-spagghettify shift cipher code, utilise the encryption function
+ - improve frequency analysis with followup checks
+	ie. check double letters, single letter words
  - vigeneres cipher
