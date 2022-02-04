@@ -36,6 +36,9 @@ english = {820:["a", "A"],150:["b", "B"],280:["c", "C"],430:["d", "D"],1300:["e"
 simple_e = {0:["e","E"], 1:["t","T"], 2:["a","A"], 3:["o","O"], 4:["i","I"], 5:["n","N"], 6:["s","S"], 7:["h","H"], 8:["r","R"], 9:["d","D"], 10:["l","L"], 11:["c","C"], 12:["u","U"], 13:["m","M"], 
 14:["w","W"], 15:["f","F"], 16:["g","G"], 17:["y","Y"], 18:["p","P"], 19:["b","B"], 20:["v","V"], 21:["k","K"], 22:["j","J"], 23:["x","X"], 24:["q","Q"], 25:["z","Z"]}
 
+alpha = "abcdefghijklmnopqrstuvwxyz"
+alpha_list = list(alpha)
+
 # prepare new translation file
 if os.path.exists("translation.txt"):
     os.remove("translation.txt")
@@ -43,6 +46,7 @@ translation = open("translation.txt", "x")
 
 # function encodes .txt based on given code
 def encoding(code):
+    # this encoding method replaces all instances of each letter, within each line break
     with open('copy.txt', 'r') as f:
         for line in f:
             cursor = line
@@ -115,8 +119,6 @@ if choice == 1:
 
     # create code alphabet using the shift number
     key = ""
-    alpha = "abcdefghijklmnopqrstuvwxyz"
-    alpha_list = list(alpha)
     key_limit = 25
     for char in alpha:
         current_index = alpha_list.index(char)
@@ -137,8 +139,6 @@ elif choice == 2:
     # remove whitespace, remove duplicate letters, then append the rest of the alphabet, then convert into a list, to search for index during translation 
     # also determine latest letter in key, to find how many letters at the end of the alphabet aren't affected
     key = ""
-    alpha = "abcdefghijklmnopqrstuvwxyz"
-    alpha_list = list(alpha)
     key_limit = 0
     cipher = cipher.replace(" ", "")
     cipher = cipher.lower()
@@ -168,9 +168,6 @@ elif choice == 2:
 ##
 elif choice == 3:
     cipher = input("What is your key-phrase? \n")
-    alpha = "abcdefghijklmnopqrstuvwxyz"
-    alpha_list = list(alpha)
-    # key_limit = 0
 
     cipher = cipher.replace(" ", "")
     cipher = cipher.lower()
@@ -178,16 +175,17 @@ elif choice == 3:
     increment = 0
     cipher_list = list(cipher)
 
-    with open('copy.txt', 'r', encoding='utf-8-sig') as f:
+    # encoding method swapping each character sequentially
+    with open('copy.txt', 'r', encoding='utf-8-sig', errors='ignore') as f:
         for line in f:
             translation = open("translation.txt", "a")
             cursor = ""
             for char in line:
-                if char.isalpha():
-                    # character index in alphabet
-                    char = char.lower()
-                    if char in alpha_list:
-                        x = alpha_list.index(char)
+                if char.isalpha(): # ignore punctuation
+                    char_lo = char.lower()
+                    if char_lo in alpha_list: # ignore accented characters
+                        # character index in alphabet
+                        x = alpha_list.index(char_lo)
                         # shift the alphabet by that index
                         key = ""
                         for letter in alpha:
@@ -203,9 +201,20 @@ elif choice == 3:
                         cipher_letter = cipher_list[increment]
                         # alphabet index of letter in cipher, is y pos
                         y = alpha_list.index(cipher_letter)
+                        if decrypt: # decryption requires the reverse shift of the row
+                            y = 26 - y
+                            if y == 26:
+                                y = 0
                         # index in column to get replacement letter
                         new_letter = column[y]
-                        cursor = cursor+new_letter
+
+                        # find index of new_letter in alpha_list, then retrieve from alphabet (need upper and lower case) 
+                        z = alpha_list.index(new_letter)
+                        replacement = alphabet[z]
+                        if char.islower():
+                            cursor = cursor+replacement[0]
+                        elif char.isupper():
+                            cursor = cursor+replacement[1]
 
                         increment += 1
                         if increment > length-1:
@@ -215,7 +224,7 @@ elif choice == 3:
 
         # write encrypted txt to translation.txt               
             translation.write(cursor)
-            translation.close()    
+            translation.close()
 
 ##
 ## rough decryption using frequency analysis of .txt ##

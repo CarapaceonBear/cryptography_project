@@ -16,6 +16,7 @@ Encryption options so far:
 	- decryption available
  - Vigenère cipher
 	- cycles through a grid of encoding alphabets, based on given keyword
+	- decryption available
  - frequency-analysis based decryption
 	- currently very rudimentary
 
@@ -23,4 +24,3 @@ Encryption options so far:
 To do list:
  - improve frequency analysis with followup checks
 	ie. check double letters, single letter words
- - decrypt vigeneres cipher? Not researched how hard that is
