@@ -2,31 +2,6 @@ from re import X
 import shutil
 import os
 
-
-question = input("Which file shall we work with?\n")
-target = r'copy.txt'
-shutil.copyfile(question, target)
-
-print("What sort of code are we working with?")
-print("1 - shift / Caesar cipher")
-print("2 - mixed alphabet cipher")
-print("3 - Vigenère cipher")
-print("4 - decryption using frequency analysis")
-choice = int(input())
-
-decrypt = False
-if choice != 4:
-    print("What would you like to do?")
-    print("1 - Encrypt \n2 - Decrypt")
-    question = int(input())
-    if question == 1:
-        decrypt = False
-    elif question == 2:
-        decrypt = True
-    else:
-        print("I don't understand")
-        quit()
-
 # reference dictionaries 
 alphabet = {0:["a", "A"],1:["b", "B"],2:["c", "C"],3:["d", "D"],4:["e","E"],5:["f","F"],6:["g","G"],7:["h","H"],8:["i","I"],9:["j","J"],10:["k","K"],11:["l","L"],12:["m","M"],
 13:["n","N"],14:["o","O"],15:["p","P"],16:["q","Q"],17:["r","R"],18:["s","S"],19:["t","T"],20:["u","U"],21:["v","V"],22:["w","W"],23:["x","X"],24:["y","Y"],25:["z","Z"]}
@@ -35,16 +10,11 @@ english = {820:["a", "A"],150:["b", "B"],280:["c", "C"],430:["d", "D"],1300:["e"
 670:["n","N"],750:["o","O"],190:["p","P"],10:["q","Q"],600:["r","R"],630:["s","S"],910:["t","T"],280:["u","U"],98:["v","V"],240:["w","W"],16:["x","X"],200:["y","Y"],7:["z","Z"]}
 simple_e = {0:["e","E"], 1:["t","T"], 2:["a","A"], 3:["o","O"], 4:["i","I"], 5:["n","N"], 6:["s","S"], 7:["h","H"], 8:["r","R"], 9:["d","D"], 10:["l","L"], 11:["c","C"], 12:["u","U"], 13:["m","M"], 
 14:["w","W"], 15:["f","F"], 16:["g","G"], 17:["y","Y"], 18:["p","P"], 19:["b","B"], 20:["v","V"], 21:["k","K"], 22:["j","J"], 23:["x","X"], 24:["q","Q"], 25:["z","Z"]}
-
+# global variables
 alpha = "abcdefghijklmnopqrstuvwxyz"
 alpha_list = list(alpha)
 
-# prepare new translation file
-if os.path.exists("translation.txt"):
-    os.remove("translation.txt")
-translation = open("translation.txt", "x")
-
-# function encodes .txt based on given code
+# function to encode .txt based on given code
 def encoding(code):
     # this encoding method replaces all instances of each letter, within each line break
     with open('copy.txt', 'r') as f:
@@ -54,10 +24,10 @@ def encoding(code):
             progress = []
             while len(progress) < (key_limit):
             # establish hold letter (which wants to become 'a')
-                temp = code[starting_point]
-                temp2 = alpha_list.index(temp)
+                x = code[starting_point]
+                y = alpha_list.index(x)
                 progress.append(starting_point)
-                hold_letter = alphabet[temp2]
+                hold_letter = alphabet[y]
             # replace 'a' with placeholder chars
                 symbol = alphabet[starting_point]
                 cursor = cursor.replace(symbol[0], '@')
@@ -65,9 +35,9 @@ def encoding(code):
 
             # first replacement (whichever wants to be 'a')
                 new_letter = alphabet[starting_point]
-                temp = code.index(new_letter[0])
-                progress.append(temp)
-                old_letter = alphabet[temp]
+                x = code.index(new_letter[0])
+                progress.append(x)
+                old_letter = alphabet[x]
 
                 cursor = cursor.replace(old_letter[0], new_letter[0])
                 cursor = cursor.replace(old_letter[1], new_letter[1])
@@ -75,9 +45,9 @@ def encoding(code):
             # work backwards through alphabet
                 new_letter = old_letter
                 while new_letter != hold_letter:
-                    temp = code.index(new_letter[0])
-                    progress.append(temp)
-                    old_letter = alphabet[temp]
+                    x = code.index(new_letter[0])
+                    progress.append(x)
+                    old_letter = alphabet[x]
 
                     cursor = cursor.replace(old_letter[0], new_letter[0])
                     cursor = cursor.replace(old_letter[1], new_letter[1])
@@ -105,15 +75,58 @@ def encoding(code):
             translation.close()
 
 ##
+## to begin, user chooses what the program is going to run ##
+##
+
+which_file = input("Which file shall we work with?\n")
+copy_file = r'copy.txt'
+if not os.path.isfile(which_file):
+    print("I can't find that file")
+    print("Goodbye")
+    quit()
+shutil.copyfile(which_file, copy_file)
+
+print("What sort of code are we working with?")
+print("1 - shift / Caesar cipher")
+print("2 - mixed alphabet cipher")
+print("3 - Vigenère cipher")
+print("4 - decryption using frequency analysis")
+choice = input()
+
+decrypt = False
+if choice == "1" or choice == "2" or choice == "3":
+    print("What would you like to do?")
+    print("1 - Encrypt \n2 - Decrypt")
+    question = input()
+    if question == "1":
+        decrypt = False
+    elif question == "2":
+        decrypt = True
+    else:
+        print("I don't understand")
+        quit()
+
+# prepare new translation file
+if os.path.exists("translation.txt"):
+    os.remove("translation.txt")
+translation = open("translation.txt", "x")
+
+##
 ## encoding your .txt using a shift cypher ##
 ##
-if choice == 1:
-    cipher = int(input("Please give a shift number, from 1-25. \n"))
+if choice == "1":
+    print("Please give a shift number, from 1-25.")
+    cipher = input()
+    if not cipher.isdigit():
+        print("That is not a numeric value")
+        print("Goodbye")
+        quit()
+    cipher = int(cipher)
     if cipher < 0 or cipher > 25:
-        print("I can't shift that much!")
-        print("I'll give you one more try:")
-        temp = int(input("Please give a shift number, from 1-25. \n"))
-        cipher = temp
+        print("That number is not within the specified range")
+        print("Goodbye")
+        quit()
+    # if decrypting, the shift is inverted
     if decrypt == True:
         cipher = 26-cipher
 
@@ -126,48 +139,61 @@ if choice == 1:
         if target_index > 25:
             target_index -= 26
         target_letter = alpha_list[target_index]
-        key=key+target_letter
+        key = key + target_letter
     code = list(key)
+
     # call encoding function
     encoding(code)
 
 ##
 ## encoding your .txt using a mixed alphabet cipher ##
 ##
-elif choice == 2:
-    cipher = input("What is your key-phrase? \n")
-    # remove whitespace, remove duplicate letters, then append the rest of the alphabet, then convert into a list, to search for index during translation 
-    # also determine latest letter in key, to find how many letters at the end of the alphabet aren't affected
+elif choice == "2":
+    print("What is your key-phrase?")
+    cipher = input()
+    if not cipher.isalpha():
+        print("Your keyphrase can't contain numbers or symbols")
+        quit()
+
     key = ""
     key_limit = 0
+    # remove whitespace
     cipher = cipher.replace(" ", "")
     cipher = cipher.lower()
     for char in cipher:
+        # ignoring duplicate letters, construct code for encryption
         if char not in key:
-            key=key+char
+            key = key + char
+            # determine latest letter in key, to establish key_limit (letters at the end of the alphabet not encrypted)
             check = alpha_list.index(char)
             if check > key_limit:
                 key_limit = check
+    # append the rest of the alphabet to the code
     for char in alpha:
         if char not in key:
-            key=key+char
+            key = key + char
     code = list(key)
     # if we're decrypting, have to create the inverse cipher, then pass that through the encryption
     if decrypt == True:
         reverse_code = []
         for char in alpha:
-            temp = code.index(char)
-            temp2 = alpha_list[temp]
-            reverse_code.append(temp2)
+            x = code.index(char)
+            y = alpha_list[x]
+            reverse_code.append(y)
         code = reverse_code
+
     # call encoding function
     encoding(code)
 
 ##
 ## encoding your .txt using a Vigenère cipher ##
 ##
-elif choice == 3:
-    cipher = input("What is your key-phrase? \n")
+elif choice == "3":
+    print("What is your key-phrase?")
+    cipher = input()
+    if not cipher.isalpha():
+        print("Your keyphrase can't contain numbers or symbols")
+        quit()
 
     cipher = cipher.replace(" ", "")
     cipher = cipher.lower()
@@ -181,10 +207,12 @@ elif choice == 3:
             translation = open("translation.txt", "a")
             cursor = ""
             for char in line:
-                if char.isalpha(): # ignore punctuation
+                # ignore punctuation and symbols
+                if char.isalpha():
                     char_lo = char.lower()
-                    if char_lo in alpha_list: # ignore accented characters
-                        # character index in alphabet
+                    # ignore accented characters
+                    if char_lo in alpha_list:
+                        # get character index in alphabet
                         x = alpha_list.index(char_lo)
                         # shift the alphabet by that index
                         key = ""
@@ -194,14 +222,15 @@ elif choice == 3:
                             if target_index > 25:
                                 target_index -= 26
                             target_letter = alpha_list[target_index]
-                            key=key+target_letter
-                        column = list(key) # shifted aphabet
+                            key = key + target_letter
+                        column = list(key)
 
                         # letter in cipher, taken from incrementing position as index
                         cipher_letter = cipher_list[increment]
-                        # alphabet index of letter in cipher, is y pos
+                        # alphabet index of letter in cipher, is y position
                         y = alpha_list.index(cipher_letter)
-                        if decrypt: # decryption requires the reverse shift of the row
+                        # if decrypting, reverse the shift of the row
+                        if decrypt: 
                             y = 26 - y
                             if y == 26:
                                 y = 0
@@ -216,6 +245,7 @@ elif choice == 3:
                         elif char.isupper():
                             cursor = cursor+replacement[1]
 
+                        # if at the end of the key-phrase, repeat
                         increment += 1
                         if increment > length-1:
                             increment -= (length)
@@ -229,14 +259,14 @@ elif choice == 3:
 ##
 ## rough decryption using frequency analysis of .txt ##
 ##
-elif choice == 4:
+elif choice == "4":
     # count frequency of each letter
     with open('copy.txt', 'r') as f:
         for line in f:
             for key in alphabet:
-                temp = alphabet[key]
-                lower = temp[0]
-                upper = temp[1]
+                x = alphabet[key]
+                lower = x[0]
+                upper = x[1]
                 count = line.count(lower) + line.count(upper)
                 frequencies[lower] += count
     sorted_items = sorted(frequencies.items(), key=lambda item: item[1], reverse=True)
@@ -244,18 +274,26 @@ elif choice == 4:
     for item in sorted_items:
         letter = item[0]
         simple_sort=simple_sort+letter
+   
     # create cipher based on likely letter-pairs, using frequencies
     key = ""
-    alpha = "abcdefghijklmnopqrstuvwxyz"
-    alpha_list = list(alpha)
     key_limit = 25
     for char in alpha:
         where_in_sort = simple_sort.index(char)
         there_in_simple_e = simple_e[where_in_sort]
         new_letter = there_in_simple_e[0]
-        key=key+new_letter
+        key = key + new_letter
     code = list(key)
+
     # call encoding function
     encoding(code)
 
+else:
+    print("I did not understand your selection")
+    print("Goodbye")
+    quit()
+
+print("Your file should now be translated")
+print("Find the file in the directory, it is named translation.txt")
+quit()
 

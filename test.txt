@@ -1,4 +1,2 @@
-I am hungry
-
-hello, my name is Will
+Hello, my name is Will
 let's see if my code works
